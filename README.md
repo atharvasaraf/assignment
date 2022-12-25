@@ -46,12 +46,8 @@ assignment_atharva_saraf
     > `cat requirements.txt | xargs pip install`
 - Above step is redundant if using option 1 (requirements are already installed)
 
-### Running example
-- from within environment run 
-    > `python example.py`
-
 ### Running Tests
-- from within environment run 
+- from within the environment run 
     > `pytest -v`
 
 ## Tests
@@ -60,7 +56,14 @@ assignment_atharva_saraf
     - Test checks for exception if a negative probability is passed
 
 2) Output distribution check
-    - Test is set up to collect 100,000 samples from `RandomGen.next_num` and compute the % difference between the ideally expected frequency of outcomes and realised frequency of outcome for every possible outcome. The test then ensures that this difference is less than a threshold value for every outcome. Since this tests the behaviour of a random number generator, this test should be run with a seed value.
+    - Test is set up to collect 100,000 samples from `RandomGen.next_num` and compute the % difference between the ideally expected frequency of outcomes and realised frequency of outcome for every possible outcome. The test then ensures that this difference is less than a threshold value for every outcome. Since this tests the behaviour of a random number generator, this test should be run with a seed value. The seed value has been to set to 1.
+
+### Running example
+The example takes a list of possible outcomes and their respective probabilities from the `example_config.py` file. These values can be changed as desired to test the behaviour.
+It then calls `RandomGen.next_num` 10,000 times, and prints the frequency of every outcome. It also shows the % divergence from the ideally expected frequency of outcomes.
+
+- from within the environment run 
+    > `python example.py`
 
 ## Assumptions
 The following assumptions have been made during development:
