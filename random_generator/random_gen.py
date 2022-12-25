@@ -1,5 +1,6 @@
 import random
 import logging
+import bisect
 
 from random_generator.exceptions import RandomGenInputInvalidException
 
@@ -18,6 +19,9 @@ class RandomGen(object):
     # set of probabilites for corresponding numbers
     _probabilities = []
 
+    # additional list to store cummulative sum of probabilites
+    _processed_cumsum_probab = []
+
     def __init__(self):
         return
 
@@ -29,28 +33,12 @@ class RandomGen(object):
         ## pseudo-random number generated uniform distribution 0-1
         random_val = random.random()
         
-        ## variable to store output
-        next_random_num = None
+        ## binary search for idx of bin corresponding to random_val from cumsum_probab
+        idx = bisect.bisect(self.processed_cumsum_probab, random_val)
+        if idx >= len(self.random_nums):
+            idx = len(self.random_nums) - 1
 
-        ## bin lower bound is initially set to 0
-        curr_bin_lower_bound = 0
-
-        ## iterating over probabilities to identify bin
-        for idx, probab in enumerate(self.probabilities):
-
-            if random_val < curr_bin_lower_bound + probab:
-                ## bin identified, update answer and break
-                if idx < len(self.random_nums):
-                    next_random_num = self.random_nums[idx]
-                break
-
-            ## current bin is wrong, update lower bound of bin
-            curr_bin_lower_bound += probab
-        
-        ## loop terminated, but no answer found, default to None
-        if next_random_num is None:
-            logger.warn(f"No matching bin found for value {random_val}, returning None")
-
+        next_random_num = self.random_nums[idx]
         return next_random_num
 
     def validate_probabilites(self, probabilities: list=[])-> None:
@@ -74,6 +62,16 @@ class RandomGen(object):
             raise RandomGenInputInvalidException(f"Given probabilities sum up to :{sum}, and not expected value (1)")
         return
 
+    def _calculate_cumsum(self, probabilites: list=[]):
+        ## basic cummulative sum of probabilities list
+        cumsum = [0]* len(probabilites)
+
+        curr_cumsum = 0
+        for idx, probab in enumerate(probabilites):
+            curr_cumsum += probab
+            cumsum[idx] = curr_cumsum
+        return cumsum
+
     ## Basic setter getter functions
     @property
     def random_nums(self):
@@ -82,6 +80,11 @@ class RandomGen(object):
     @property
     def probabilities(self):
         return self._probabilities
+
+    @property
+    def processed_cumsum_probab(self):
+        return self._processed_cumsum_probab
+    
 
     @random_nums.setter
     def random_nums(self, random_nums: list=None):
@@ -92,3 +95,10 @@ class RandomGen(object):
         ## Validate probabilities input before setting
         self.validate_probabilites(probabilities=probabilities)
         self._probabilities = probabilities
+
+        ## calculate cumsum of probabilities and store
+        self.processed_cumsum_probab = self._calculate_cumsum(probabilites=probabilities)
+    
+    @processed_cumsum_probab.setter
+    def processed_cumsum_probab(self, cumsum_probab: list=None):
+        self._processed_cumsum_probab = cumsum_probab

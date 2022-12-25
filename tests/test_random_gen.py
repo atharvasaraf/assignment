@@ -28,8 +28,8 @@ class TestRandomGen(object):
         wrong_outputs = [x for x in output_freq if x not in self.random_nums_input]
         assert len(wrong_outputs) == 0
         
-    def test_distribution_of_inputs(self):
-        ## Test to ensure that the maximum divergence % for n-iterations is less that threshold
+    def test_distribution_of_outputs(self):
+        ## Test to ensure that the maximum divergence % for n-iterations is less than threshold
         ## seed should be set in this case
 
         ## Setup random numbers and their respective probabilities
